@@ -1363,13 +1363,10 @@ function renderAll(){
       div.className='match-card'+(sc?' filled':'');div.id='mc'+m.id;
       // After submit: already-filled matches are locked, empty ones still editable
       const lockedInput = (scoresSubmitted && sc !== undefined) || globalLocked;
-      div.innerHTML=`<div><div class="match-num">بازی ${i}</div><div class="team-name team-home"><span style="font-size:1.1em">${fl(m.home)}</span> ${m.home}</div></div>
+      div.innerHTML=`<div><div class="match-num">بازی ${i} ${m.time?`&nbsp;<span class="match-time-badge">⏱ ${m.time}</span>`:''}</div><div class="team-name team-home"><span style="font-size:1.1em">${fl(m.home)}</span> ${m.home}</div></div>
 <div class="score-wrap">
   <input class="score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="sh${m.id}" value="${sc!==undefined?sc.h:''}" placeholder="—" ${lockedInput?'disabled':''} oninput="onScore(${m.id})">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-    <span class="vs-sep">:</span>
-    ${m.time?`<span style="font-size:0.55rem;color:var(--text3);font-weight:700;white-space:nowrap">${m.time}</span>`:''}
-  </div>
+  <span class="vs-sep">:</span>
   <input class="score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="sa${m.id}" value="${sc!==undefined?sc.a:''}" placeholder="—" ${lockedInput?'disabled':''} oninput="onScore(${m.id})">
 </div>
 <div><div class="match-num">&nbsp;</div><div class="team-name team-away">${m.away} <span style="font-size:1.1em">${fl(m.away)}</span></div></div>`;
@@ -1560,10 +1557,15 @@ function renderAdminMatches(){
     row.innerHTML=`<span style="text-align:right;font-size:0.73rem">${fl(m.home)} ${m.home}</span>
 <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
   <span class="match-time-badge" style="font-size:0.62rem;">${m.time||''}</span>
-  <div style="display:flex;align-items:center;gap:4px">
-    <input class="admin-score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="rsh${m.id}" value="${rs!==undefined?rs.h:''}" placeholder="—" oninput="validateAdminScore(${m.id})">
-    <span style="color:var(--text3)">:</span>
-    <input class="admin-score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="rsa${m.id}" value="${rs!==undefined?rs.a:''}" placeholder="—" oninput="validateAdminScore(${m.id})">
+  <div style="display:flex;align-items:center;gap:2px;direction:rtl">
+    <input class="admin-score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="rsh${m.id}" value="${rs!==undefined?rs.h:''}" placeholder="—" oninput="validateAdminScore(${m.id})" title="${m.home}" style="border-color:rgba(232,200,74,0.4)">
+    <span style="color:var(--text3);font-size:0.8rem">:</span>
+    <input class="admin-score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="rsa${m.id}" value="${rs!==undefined?rs.a:''}" placeholder="—" oninput="validateAdminScore(${m.id})" title="${m.away}" style="border-color:rgba(59,130,246,0.4)">
+  </div>
+  <div style="display:flex;gap:2px;direction:rtl;width:100%;justify-content:center">
+    <span style="font-size:0.48rem;color:rgba(232,200,74,0.7);width:38px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.home}</span>
+    <span style="width:8px"></span>
+    <span style="font-size:0.48rem;color:rgba(59,130,246,0.7);width:38px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.away}</span>
   </div>
 </div>
 <span style="text-align:left;font-size:0.73rem">${m.away} ${fl(m.away)}</span>`;
@@ -1908,7 +1910,8 @@ async function saveRealScoresOnly(){
   }
   try{
     await sb.upsert('real_data',{id:1,scores:realData.scores,specials:realData.specials,groups:realData.groups});
-    showToast('نتایج بازی‌ها ذخیره شد ✓','ok');updateProgress();
+    await recalcAllUserScores();
+    showToast('نتایج ثبت شد و امتیازها آپدیت شدند ✓','ok');updateProgress();
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
  
