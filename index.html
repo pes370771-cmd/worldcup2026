@@ -1366,9 +1366,9 @@ function renderAll(){
       div.innerHTML=`<div><div class="match-num">بازی ${i}</div><div class="team-name team-home"><span style="font-size:1.1em">${fl(m.home)}</span> ${m.home}</div></div>
 <div class="score-wrap">
   <input class="score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="sh${m.id}" value="${sc!==undefined?sc.h:''}" placeholder="—" ${lockedInput?'disabled':''} oninput="onScore(${m.id})">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
     <span class="vs-sep">:</span>
-    ${m.time?`<span class="match-time-badge" style="font-size:0.58rem;padding:1px 6px">⏱ ${m.time}</span>`:''}
+    ${m.time?`<span style="font-size:0.55rem;color:var(--text3);font-weight:700;white-space:nowrap">${m.time}</span>`:''}
   </div>
   <input class="score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="sa${m.id}" value="${sc!==undefined?sc.a:''}" placeholder="—" ${lockedInput?'disabled':''} oninput="onScore(${m.id})">
 </div>
