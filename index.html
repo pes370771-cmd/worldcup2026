@@ -901,6 +901,9 @@ body.light .header{background:rgba(244,247,255,0.96);}
           <button onclick="unlockGroupsForUser()" style="flex:1;background:linear-gradient(135deg,var(--wc-green),#166534);color:#fff;border:none;border-radius:var(--radius-sm);padding:0.65rem;font-family:'Vazirmatn',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer">🔓 آنلاک گروه‌بندی</button>
           <button onclick="unlockSpecialsForUser()" style="flex:1;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0e1a;border:none;border-radius:var(--radius-sm);padding:0.65rem;font-family:'Vazirmatn',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer">🔓 آنلاک ویژه</button>
         </div>
+        <div style="margin-top:0.5rem">
+          <button onclick="unlockAllScoresForUser()" style="width:100%;background:linear-gradient(135deg,rgba(239,68,68,0.8),#991b1b);color:#fff;border:none;border-radius:var(--radius-sm);padding:0.65rem;font-family:'Vazirmatn',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer">🔓 آنلاک همه نتایج بازی‌ها</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1184,7 +1187,10 @@ const GKS=[
   "علیرضا بیرانوند","رویی پاتریسیو","دیوگو کوستا","آنتونی لوپز","کپا آرایزابالاگا","اونای سیمون","روبرت سانچز",
   "ادوار مندی","آلفرد گومیس","کوین ترپ","برند لنو","پتر گولاچی","توماش واچلیک","ایوان ایووشیچ","دومینیک لیواکویچ","ژلیکو برکیچ",
   "گیریم اونوت","آلتای بایوندور","مروان لاسل","یاسین مروان","مارکوس نوبل","آنتروپوف","اِستِبان آندرادا",
-  "گائول اولسن","اورجان نیلاند","گابریل چمو","آماد نیانگ","کوینتیکو نیانگ","دانیلو فرنانده","دیوید اُرتگا"
+  "گائول اولسن","اورجان نیلاند","گابریل چمو","آماد نیانگ","کوینتیکو نیانگ","دانیلو فرنانده","دیوید اُرتگا",
+  "خرونیمو رویی","والتر بنیتس","ادرسون","دین هندرسون","جیمز ترافورد","مایک مانیان","بریس سامبا",
+  "روبین ریسر","داوید رایا","خوان گارسیا","ژوزه سا","روی سیلوا","ریکاردو ولو",
+  "سنه لامنس","مایک پندرز","موری دیاو","یهوان دیوف","زیون سوزوکی","کیسوکه اوساکو"
 ];
  
 const ADMIN_PASS='admin2026';
@@ -1329,7 +1335,15 @@ async function loadGlobal(){
 async function loadMyPred(){
   try{
     const rows=await sb.get('predictions',`username=eq.${encodeURIComponent(currentUser)}`);
-    if(rows.length){myPred=rows[0].pred||{scores:{},groups:{},specials:{}};scoresSubmitted=rows[0].submitted||false;groupsSubmitted=myPred._groupsSubmitted||false;specialsSubmitted=myPred._specialsSubmitted||false;}
+    if(rows.length){
+      myPred=rows[0].pred||{scores:{},groups:{},specials:{}};
+      scoresSubmitted=rows[0].submitted||false;
+      groupsSubmitted=myPred._groupsSubmitted||false;
+      specialsSubmitted=myPred._specialsSubmitted||false;
+      // اگر ادمین آنلاک کرده باشد، قفل را باز کن
+      if(myPred._adminUnlockedSpecials)specialsSubmitted=false;
+      if(myPred._adminUnlockedGroups)groupsSubmitted=false;
+    }
     else{myPred={scores:{},groups:{},specials:{}};scoresSubmitted=false;groupsSubmitted=false;specialsSubmitted=false;}
   }catch(e){}
   renderAll();renderSpecials();renderAdminMatches();updateProgress();updateBottomBar();
@@ -1362,7 +1376,9 @@ function renderAll(){
       const div=document.createElement('div');
       div.className='match-card'+(sc?' filled':'');div.id='mc'+m.id;
       // After submit: already-filled matches are locked, empty ones still editable
-      const lockedInput = (scoresSubmitted && sc !== undefined) || globalLocked;
+      const adminUnlockedMatches=myPred._adminUnlockedMatches||[];
+      const isAdminUnlocked=adminUnlockedMatches.includes(m.id);
+      const lockedInput = (!isAdminUnlocked && scoresSubmitted && sc !== undefined) || globalLocked;
       div.innerHTML=`<div><div class="match-num">بازی ${i} ${m.time?`&nbsp;<span class="match-time-badge">⏱ ${m.time}</span>`:''}</div><div class="team-name team-home"><span style="font-size:1.1em">${fl(m.home)}</span> ${m.home}</div></div>
 <div class="score-wrap">
   <input class="score-input" type="text" inputmode="numeric" pattern="[0-9]*" id="sh${m.id}" value="${sc!==undefined?sc.h:''}" placeholder="—" ${lockedInput?'disabled':''} oninput="onScore(${m.id})">
@@ -1589,7 +1605,9 @@ function validateAdminScore(id){
 // ===== INPUT HANDLERS =====
 function onScore(id){
   if(globalLocked){return;}
-  const wasSubmitted = scoresSubmitted && myPred.scores[id] !== undefined;
+  const adminUnlockedMatches=myPred._adminUnlockedMatches||[];
+  const isAdminUnlocked=adminUnlockedMatches.includes(id);
+  const wasSubmitted = scoresSubmitted && myPred.scores[id] !== undefined && !isAdminUnlocked;
   if(wasSubmitted) return;
   const hi=document.getElementById('sh'+id);
   const ai=document.getElementById('sa'+id);
@@ -1600,6 +1618,10 @@ function onScore(id){
     myPred.scores[id]={h:parseInt(h),a:parseInt(a)};
     document.getElementById('mc'+id)?.classList.add('filled');
     hi.classList.remove('error');ai.classList.remove('error');
+    // بعد از ثبت بازی آنلاک‌شده، از لیست آنلاک حذف می‌شود (قفل می‌شود)
+    if(isAdminUnlocked){
+      myPred._adminUnlockedMatches=adminUnlockedMatches.filter(x=>x!==id);
+    }
   }else{
     delete myPred.scores[id];
     document.getElementById('mc'+id)?.classList.remove('filled');
@@ -2039,7 +2061,9 @@ async function submitGroupsOnly(){
   try{
     const score=calcScore(myPred);
     groupsSubmitted=true;
-    myPred._groupsSubmitted=groupsSubmitted;myPred._specialsSubmitted=specialsSubmitted;await sb.upsert('predictions',{username:currentUser,pred:myPred,submitted:scoresSubmitted,score,ts:Date.now()});
+    myPred._groupsSubmitted=groupsSubmitted;myPred._specialsSubmitted=specialsSubmitted;
+    delete myPred._adminUnlockedGroups;
+    await sb.upsert('predictions',{username:currentUser,pred:myPred,submitted:scoresSubmitted,score,ts:Date.now()});
     renderAll();
     showToast('✅ گروه‌بندی ثبت شد','ok');
   }catch(e){showToast('خطا در ثبت: '+e.message,'err');}
@@ -2053,7 +2077,9 @@ async function submitSpecialsOnly(){
   try{
     const score=calcScore(myPred);
     specialsSubmitted=true;
-    myPred._groupsSubmitted=groupsSubmitted;myPred._specialsSubmitted=specialsSubmitted;await sb.upsert('predictions',{username:currentUser,pred:myPred,submitted:scoresSubmitted,score,ts:Date.now()});
+    myPred._groupsSubmitted=groupsSubmitted;myPred._specialsSubmitted=specialsSubmitted;
+    delete myPred._adminUnlockedSpecials;
+    await sb.upsert('predictions',{username:currentUser,pred:myPred,submitted:scoresSubmitted,score,ts:Date.now()});
     renderSpecials();
     showToast('✅ پیش‌بینی‌های ویژه ثبت شد','ok');
   }catch(e){showToast('خطا در ثبت: '+e.message,'err');}
@@ -2092,6 +2118,8 @@ async function unlockMatchForUser(){
     if(!rows.length){showToast('کاربر یافت نشد یا پیش‌بینی ندارد','err');return;}
     const pred=rows[0].pred||{scores:{},groups:{},specials:{}};
     delete pred.scores[matchId];
+    if(!pred._adminUnlockedMatches)pred._adminUnlockedMatches=[];
+    if(!pred._adminUnlockedMatches.includes(matchId))pred._adminUnlockedMatches.push(matchId);
     await adminPatch(username,{pred,ts:Date.now()});
     showToast(`قفل بازی ${matchId} برای ${username} باز شد ✓`,'ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
@@ -2107,6 +2135,7 @@ async function unlockGroupsForUser(){
     const pred=rows[0].pred||{scores:{},groups:{},specials:{}};
     pred.groups={};
     pred._groupsSubmitted=false;
+    pred._adminUnlockedGroups=Date.now();
     await adminPatch(username,{pred,ts:Date.now()});
     showToast(`گروه‌بندی ${username} آنلاک شد ✓`,'ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
@@ -2122,8 +2151,25 @@ async function unlockSpecialsForUser(){
     const pred=rows[0].pred||{scores:{},groups:{},specials:{}};
     pred.specials={};
     pred._specialsSubmitted=false;
+    pred._adminUnlockedSpecials=Date.now();
     await adminPatch(username,{pred,ts:Date.now()});
     showToast(`ویژه‌های ${username} آنلاک شد ✓`,'ok');
+  }catch(e){showToast('خطا: '+e.message,'err');}
+}
+
+async function unlockAllScoresForUser(){
+  const selEl=document.getElementById('unlock-user-select');
+  const username=(selEl?selEl.value:'')||document.getElementById('unlock-username')?.value.trim();
+  if(!username){showToast('کاربری انتخاب نشده','err');return;}
+  if(!confirm(`آیا مطمئنید؟ تمام نتایج ثبت‌شده برای ${username} آنلاک می‌شوند.`))return;
+  try{
+    const rows=await sb.get('predictions',`username=eq.${encodeURIComponent(username)}`);
+    if(!rows.length){showToast('کاربر یافت نشد یا پیش‌بینی ندارد','err');return;}
+    const pred=rows[0].pred||{scores:{},groups:{},specials:{}};
+    const allMatchIds=Object.keys(pred.scores||{}).map(Number);
+    pred._adminUnlockedMatches=allMatchIds;
+    await adminPatch(username,{pred,submitted:false,ts:Date.now()});
+    showToast(`همه نتایج ${username} آنلاک شد ✓`,'ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
  
@@ -2137,12 +2183,51 @@ function goTab(name,btn){
   btn.classList.add('active');
   btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   if(name==='lb')loadLB();
+  if(name==='specials'&&currentUser)checkAdminUnlock('specials');
+  if(name==='groups'&&currentUser)checkAdminUnlock('groups');
+  if(['m1','m2','m3','m4'].includes(name)&&currentUser)checkAdminUnlock('matches');
   // Hide global bottom-bar on panels that have their own submit button
   const bar=document.getElementById('bottom-bar');
   if(bar){
     const panelsWithOwnSubmit=['m1','m2','m3','m4','groups','specials'];
     bar.style.display=panelsWithOwnSubmit.includes(name)?'none':'block';
   }
+}
+
+async function checkAdminUnlock(section){
+  try{
+    const rows=await sb.get('predictions',`username=eq.${encodeURIComponent(currentUser)}`);
+    if(!rows.length)return;
+    const pred=rows[0].pred||{};
+    if(section==='specials'&&pred._adminUnlockedSpecials){
+      if(specialsSubmitted){
+        specialsSubmitted=false;
+        myPred._specialsSubmitted=false;
+        myPred.specials=pred.specials||{};
+        myPred._adminUnlockedSpecials=pred._adminUnlockedSpecials;
+        renderSpecials();
+        showToast('🔓 بخش ویژه برای شما باز شد — می‌توانید ویرایش کنید','ok');
+      }
+    }
+    if(section==='groups'&&pred._adminUnlockedGroups){
+      if(groupsSubmitted){
+        groupsSubmitted=false;
+        myPred._groupsSubmitted=false;
+        myPred.groups=pred.groups||{};
+        myPred._adminUnlockedGroups=pred._adminUnlockedGroups;
+        renderAll();
+        showToast('🔓 بخش گروه‌بندی برای شما باز شد — می‌توانید ویرایش کنید','ok');
+      }
+    }
+    if(section==='matches'&&pred._adminUnlockedMatches&&pred._adminUnlockedMatches.length){
+      const newUnlocks=pred._adminUnlockedMatches.filter(id=>!(myPred._adminUnlockedMatches||[]).includes(id));
+      if(newUnlocks.length){
+        myPred._adminUnlockedMatches=(myPred._adminUnlockedMatches||[]).concat(newUnlocks);
+        renderAll();
+        showToast(`🔓 بازی‌های ${newUnlocks.join('، ')} برای شما باز شد — می‌توانید ویرایش کنید`,'ok');
+      }
+    }
+  }catch(e){}
 }
  
 // ===== TOAST =====
