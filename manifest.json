@@ -2,7 +2,7 @@
   "name": "جام جهانی ۲۰۲۶",
   "short_name": "WC2026",
   "description": "پیش‌بینی بازی‌های جام جهانی ۲۰۲۶",
-  "start_url": "/worldcup2026/worldcup%20final.html",
+  "start_url": "/worldcup2026/worldcup_final.html",
   "scope": "/worldcup2026/",
   "display": "standalone",
   "orientation": "portrait",
