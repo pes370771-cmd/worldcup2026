@@ -557,9 +557,6 @@ body.light .header{background:rgba(3,6,15,0.8);}
   letter-spacing:0.04em;box-shadow:0 0 8px rgba(232,200,74,0.1);
   margin-top:2px;
 }
-  border-radius:var(--radius);padding:1rem;margin-bottom:0.4rem;
-  position:relative;overflow:hidden;
-}
 .unlocked-field::before{
   content:'';position:absolute;top:0;right:0;
   width:3px;height:100%;
@@ -1308,7 +1305,9 @@ body.light .header{background:rgba(3,6,15,0.8);}
           </select>
         </div>
         <div class="field-group"><label class="field-label">🟨 داور فینال</label>
-          <input class="field-input" id="r-referee" placeholder="نام داور" oninput="saveReal()" style="direction:ltr">
+          <select class="team-select" id="r-referee" onchange="saveReal()">
+            <option value="">— انتخاب داور —</option>
+          </select>
         </div>
         <div class="field-group"><label class="field-label">⭐ بهترین بازیکن</label>
           <select class="team-select" id="r-bestplayer" onchange="saveReal()" size="1">
@@ -1632,7 +1631,7 @@ const MATCHES=[
  
 const GROUPS={A:["مکزیک","آفریقای جنوبی","کره جنوبی","جمهوری چک"],B:["بوسنی","کانادا","قطر","سوئیس"],C:["برزیل","هائیتی","مراکش","اسکاتلند"],D:["استرالیا","پاراگوئه","ترکیه","آمریکا"],E:["کوراسائو","اکوادور","ساحل عاج","آلمان"],F:["هلند","تونس","ژاپن","سوئد"],G:["بلژیک","ایران","نیوزیلند","مصر"],H:["کیپ ورد","اسپانیا","عربستان","اروگوئه"],I:["فرانسه","عراق","سنگال","نروژ"],J:["اردن","اتریش","الجزایر","آرژانتین"],K:["پرتغال","جمهوری کنگو","کلمبیا","ازبکستان"],L:["غنا","پاناما","کرواسی","انگلیس"]};
  
-const SPECIALS=[{key:'champion',label:'قهرمان تورنومنت',pts:15,icon:'🏆',type:'team'},{key:'topscorer',label:'آقای گل',pts:10,icon:'⚽',type:'player'},{key:'topassist',label:'آقای پاس‌گل',pts:10,icon:'🎯',type:'player'},{key:'referee',label:'داور فینال',pts:10,icon:'🟨',type:'text'},{key:'bestplayer',label:'بهترین بازیکن',pts:5,icon:'⭐',type:'player'},{key:'bestgk',label:'بهترین دروازه‌بان',pts:5,icon:'🧤',type:'gk'}];
+const SPECIALS=[{key:'champion',label:'قهرمان تورنومنت',pts:15,icon:'🏆',type:'team'},{key:'topscorer',label:'آقای گل',pts:10,icon:'⚽',type:'player'},{key:'topassist',label:'آقای پاس‌گل',pts:10,icon:'🎯',type:'player'},{key:'referee',label:'داور فینال',pts:10,icon:'🟨',type:'referee'},{key:'bestplayer',label:'بهترین بازیکن',pts:5,icon:'⭐',type:'player'},{key:'bestgk',label:'بهترین دروازه‌بان',pts:5,icon:'🧤',type:'gk'}];
  
 const ALL_TEAMS=["آفریقای جنوبی","مکزیک","جمهوری چک","کره جنوبی","بوسنی","کانادا","پاراگوئه","آمریکا","ترکیه","استرالیا","سوئیس","قطر","مراکش","برزیل","اسکاتلند","هائیتی","کوراسائو","آلمان","ژاپن","هلند","اکوادور","ساحل عاج","تونس","سوئد","کیپ ورد","اسپانیا","مصر","بلژیک","اروگوئه","عربستان","نیوزیلند","ایران","اردن","اتریش","سنگال","فرانسه","نروژ","عراق","الجزایر","آرژانتین","جمهوری کنگو","پرتغال","کرواسی","انگلیس","پاناما","غنا","کلمبیا","ازبکستان"];
  
@@ -1783,6 +1782,21 @@ const GKS=[
   "سنه لامنس","مایک پندرز","موری دیاو","یهوان دیوف","زیون سوزوکی","کیسوکه اوساکو"
 ];
  
+const REFEREES=[
+  "عبدالرحمن الجاسم","عمر آل‌علی","خالد الطریس","علیرضا فغانی","مصطفی غربال",
+  "دهان بیدا","ژان ژاک اندالا","عیسی سی","کلمنت فرانکلین","کپن رامون",
+  "آباتی آبل","داریو هررا","یائل فالکون پرس","کوین اورتگا","ویلتون سامپایو",
+  "خوان گابریل بنتیس","کریستیان گارای","استبان اوستویچ","ایوان بارتون",
+  "ماریو اسکوبار","کاتیا ایتزل گارسیا","سزار راموس","درو فیشر","اوشین نیشن",
+  "توری پنسو","کمپبل کرک","کاوانا-وا گلن","نیبرگ اسپن","اسکاس شیمون",
+  "مارسینیاک دنی","ماکلی آنتونی","تیلور مایکل","اولیور کلمن","تورپن فرانسوا",
+  "لتکسیه ایشتوان","کواچ ساندرو","شرر فلیکس","تسوایر اسلاوکو","وینچیچ مائوریتزیو",
+  "ماریانی ژوائو","پینیرو آلخاندرو","هرناندز هرناندز خوسه","ماریا سانچس عرفان",
+  "پلیتو خلیل","اوموت ملر","ژوائو پدرو سیلوا","پینیرو بنوا","باستین توبیاس",
+  "اشتیلر خسوس","والنزوئلا آندرس","ماتونته فاکوندو","تیو رافائل","کلاوس آندرس",
+  "روخاس این"
+];
+
 const ADMIN_PASS='admin2026';
 
 // ===== TEAM FLAGS =====
@@ -1976,6 +1990,12 @@ function populateTeamSelects(){
     gks.innerHTML='<option value="">— انتخاب دروازه‌بان —</option>'+sortedGKs.map(p=>`<option value="${p}">${p}</option>`).join('');
     if(realData.specials&&realData.specials.bestgk)gks.value=realData.specials.bestgk;
   }
+  // Admin referee select
+  const refSel=document.getElementById('r-referee');
+  if(refSel){
+    refSel.innerHTML='<option value="">— انتخاب داور —</option>'+REFEREES.map(r=>`<option value="${r}">${r}</option>`).join('');
+    if(realData.specials&&realData.specials.referee)refSel.value=realData.specials.referee;
+  }
 }
  
 // ===== GLOBAL DATA =====
@@ -2084,6 +2104,8 @@ function renderAll(){
 function renderSpecials(){
   const wrap=document.getElementById('specials-wrap');if(!wrap)return;
   wrap.innerHTML='';
+  // Update submit button state on every render
+  setTimeout(()=>updateSpecialsSubmitWrap&&updateSpecialsSubmitWrap(),0);
   const notice=document.getElementById('specials-notice');
   const anyLocked=SPECIALS.some(s=>!settings.unlocked[s.key]);
   if(notice)notice.style.display=anyLocked?'block':'none';
@@ -2150,6 +2172,48 @@ function renderSpecials(){
           // Store validPick ref on element so pickAC can set it
           inp._setValid=(v)=>{validPick=v;};
         },50);
+      }else if(sp.type==='referee'){
+        // Referee autocomplete dropdown
+        const acDiv=document.createElement('div');acDiv.className='autocomplete-wrap';
+        const inpEl=document.createElement('input');
+        inpEl.className='autocomplete-input';inpEl.id='sp-'+sp.key;
+        inpEl.value=val;inpEl.placeholder='نام داور را انتخاب کنید...';
+        inpEl.autocomplete='off';if(specialsSubmitted||globalLocked)inpEl.disabled=true;
+        acDiv.appendChild(inpEl);
+        div.appendChild(acDiv);
+        const ddEl=document.createElement('div');
+        ddEl.className='autocomplete-dropdown';ddEl.id='ac-'+sp.key;
+        document.body.appendChild(ddEl);
+        setTimeout(()=>{
+          const inp=document.getElementById('sp-'+sp.key);
+          const dd=document.getElementById('ac-'+sp.key);
+          if(!inp)return;
+          let validPick=val!=='';
+          inp.addEventListener('input',()=>{
+            validPick=false;
+            showAutoComplete(inp,dd,REFEREES,sp.key);
+          });
+          inp.addEventListener('focus',()=>{
+            // On focus show full list if empty, else filter
+            showAutoComplete(inp,dd,REFEREES,sp.key,true);
+          });
+          inp.addEventListener('keydown',(e)=>{
+            if(!dd.classList.contains('open'))return;
+            const items=dd.querySelectorAll('.autocomplete-item');
+            if(e.key==='ArrowDown'){e.preventDefault();dd._active=Math.min((dd._active||0)+1,items.length-1);}
+            else if(e.key==='ArrowUp'){e.preventDefault();dd._active=Math.max((dd._active||0)-1,0);}
+            else if(e.key==='Enter'&&dd._active>=0){e.preventDefault();const it=items[dd._active];if(it){const val2=dd._items[dd._active];if(val2)pickAC(sp.key,val2);}}
+            else if(e.key==='Escape'){dd.classList.remove('open');}
+            items.forEach((it,i)=>it.classList.toggle('active',i===dd._active));
+          });
+          inp.addEventListener('blur',()=>{
+            setTimeout(()=>{
+              dd.classList.remove('open');
+              if(!validPick){inp.value=myPred.specials[sp.key]||'';}
+            },200);
+          });
+          inp._setValid=(v)=>{validPick=v;};
+        },50);
       }else{
         // Free text
         const inp=document.createElement('input');
@@ -2164,9 +2228,25 @@ function renderSpecials(){
   }
 }
  
-function showAutoComplete(inp,dd,list,key){
+function showAutoComplete(inp,dd,list,key,showAll){
   const q=inp.value.trim().toLowerCase();
-  if(!q){dd.classList.remove('open');return;}
+  if(!q&&!showAll){dd.classList.remove('open');return;}
+  if(!q&&showAll){
+    // Show all items when field is focused and empty
+    const matches=list.slice(0,60);
+    if(!matches.length){dd.classList.remove('open');return;}
+    dd.innerHTML=matches.map((p,i)=>{
+      const safe=p.replace(/'/g,"\\'");
+      return `<div class="autocomplete-item" data-idx="${i}" onmousedown="pickAC('${key}','${safe}')">${p}</div>`;
+    }).join('');
+    const rect=inp.getBoundingClientRect();
+    dd.style.left=rect.left+'px';
+    dd.style.top=(rect.bottom+4)+'px';
+    dd.style.width=rect.width+'px';
+    dd.classList.add('open');
+    dd._items=matches;dd._active=-1;
+    return;
+  }
   // جستجوی هوشمند: اول نتایجی که با کلمه شروع میشه، بعد بقیه
   const startsWithQ=list.filter(p=>p.toLowerCase().startsWith(q));
   const containsQ=list.filter(p=>!p.toLowerCase().startsWith(q)&&p.toLowerCase().includes(q));
@@ -2917,6 +2997,8 @@ async function recalcAllUserScores(){
   try{
     const rows=await sb.get('predictions','select=username,pred,submitted');
     for(const row of rows){
+      // Skip system rows like __ko_data__
+      if(!row.username||row.username.startsWith('__'))continue;
       const newScore=calcScore(row.pred||{scores:{},groups:{},specials:{}});
       await fetch(`${SUPABASE_URL}/rest/v1/predictions?username=eq.${encodeURIComponent(row.username)}`,{
         method:'PATCH',
@@ -2933,7 +3015,8 @@ async function loadAdminUsers(){
   if(!wrap)return;
   wrap.innerHTML='<div style="font-size:0.78rem;color:var(--text2);padding:0.3rem 0">در حال بارگذاری...</div>';
   try{
-    const users=await sb.get('users','select=username&order=username.asc');
+    const allUsers=await sb.get('users','select=username&order=username.asc');
+    const users=allUsers.filter(u=>u.username&&!u.username.startsWith('__'));
     if(!users.length){wrap.innerHTML='<div style="font-size:0.78rem;color:var(--text3)">هیچ کاربری یافت نشد</div>';return;}
     wrap.innerHTML=users.map(u=>`
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0.6rem;background:var(--surface2);border-radius:8px;margin-bottom:0.3rem;border:1px solid var(--border)">
@@ -2997,9 +3080,23 @@ async function submitSpecialsOnly(){
     delete myPred._adminUnlockedSpecials;
     await sb.upsert('predictions',{username:currentUser,pred:myPred,submitted:scoresSubmitted,score,ts:Date.now()});
     renderSpecials();
-    showToast('✅ پیش‌بینی‌های ویژه ثبت شد','ok');
-  }catch(e){showToast('خطا در ثبت: '+e.message,'err');}
-  finally{if(btn){btn.disabled=false;btn.textContent='ثبت ویژه';}}
+    updateSpecialsSubmitWrap();
+    showToast('✅ پیش‌بینی‌های ویژه ثبت و قفل شد','ok');
+  }catch(e){
+    specialsSubmitted=false;
+    showToast('خطا در ثبت: '+e.message,'err');
+    if(btn){btn.disabled=false;btn.textContent='ثبت ویژه';}
+  }
+}
+
+function updateSpecialsSubmitWrap(){
+  const wrap=document.getElementById('specials-submit-wrap');
+  if(!wrap)return;
+  if(specialsSubmitted){
+    wrap.innerHTML=`<div class="submitted-bar">✅ پیش‌بینی‌های ویژه ثبت و قفل شدند 🔒</div>`;
+  }else{
+    wrap.innerHTML=`<button onclick="submitSpecialsOnly()" id="submit-specials-btn" style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0e1a;border:none;border-radius:var(--radius-sm);padding:0.85rem;font-family:'Vazirmatn',sans-serif;font-size:0.95rem;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.4rem">ثبت ویژه</button>`;
+  }
 }
  
 // ===== ENHANCED UNLOCK: load user list into dropdown =====
@@ -3091,28 +3188,33 @@ async function unlockAllScoresForUser(){
 
 // ===== KO CLEAR & UNLOCK =====
 async function clearKOTeams(){
+  if(!confirm('آیا مطمئن هستید؟ تمام تیم\u2011های نمودار و نتایج حذفی پاک می\u2011شوند.'))return;
   koSetup.r32 = Array.from({length:16}, ()=>({h:'', a:''}));
+  koSetup.visible = false;
   for(const stage of KO_STAGES){
     koReal[stage] = Array.from({length:KO_STAGE_COUNT[stage]}, ()=>({h:'',a:'',winner:''}));
   }
   try{
     await saveKOData();
-    await recalcAllUserScores();
     renderAdminKO();
     renderAdminKOResults();
+    const visEl=document.getElementById('tgl-ko-visible');
+    if(visEl)visEl.checked=false;
+    await recalcAllUserScores();
     renderFotmobBracket(globalLocked);
     showToast('نمودار حذفی کاملاً پاک شد ✓','ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
 
 async function clearKOResults(){
+  if(!confirm('آیا مطمئن هستید؟ تمام نتایج مرحله حذفی پاک می\u2011شوند.'))return;
   for(const stage of KO_STAGES){
     koReal[stage] = Array.from({length:KO_STAGE_COUNT[stage]}, ()=>({h:'',a:'',winner:''}));
   }
   try{
     await saveKOData();
-    await recalcAllUserScores();
     renderAdminKOResults();
+    await recalcAllUserScores();
     renderFotmobBracket(globalLocked);
     showToast('نتایج حذفی پاک شدند ✓','ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
@@ -4168,6 +4270,7 @@ async function checkAdminUnlock(section){
         myPred.specials=pred.specials||{};
         myPred._adminUnlockedSpecials=pred._adminUnlockedSpecials;
         renderSpecials();
+        updateSpecialsSubmitWrap&&updateSpecialsSubmitWrap();
         showToast('🔓 بخش ویژه برای شما باز شد — می‌توانید ویرایش کنید','ok');
       }
     }
