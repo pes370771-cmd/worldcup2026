@@ -1358,6 +1358,7 @@ body.light .header{background:rgba(3,6,15,0.8);}
             <button onclick="clearKOTeams()" style="flex:1;background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.08));color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:var(--radius-sm);padding:0.6rem;font-family:'Vazirmatn',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">🗑 کلیر تیم‌های نمودار</button>
             <button onclick="clearKOResults()" style="flex:1;background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.08));color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:var(--radius-sm);padding:0.6rem;font-family:'Vazirmatn',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">🗑 کلیر نتایج لیست</button>
           </div>
+          <button onclick="nuclearResetKO()" style="width:100%;background:linear-gradient(135deg,rgba(239,68,68,0.3),rgba(185,28,28,0.2));color:#ff6b6b;border:1px solid rgba(239,68,68,0.5);border-radius:var(--radius-sm);padding:0.65rem;font-family:Vazirmatn,sans-serif;font-size:0.8rem;font-weight:800;cursor:pointer;margin-top:0.3rem">⚠️ ریست کامل نمودار + پاک کردن پیش‌بینی‌های همه کاربران</button>
         </div>
       </div>
 
@@ -2116,12 +2117,22 @@ function renderSpecials(){
       wrap.innerHTML+=`<div class="locked-field"><span>${sp.icon}</span><span style="font-size:0.82rem">${sp.label}</span><span class="locked-badge">🔒 قفل</span></div>`;
     }else{
       const div=document.createElement('div');div.className='unlocked-field';
+      // هر فیلد جداگانه قفل میشه:
+      // قفل اگه: (submit شده و کاربر این فیلد رو پر کرده) یا (ادمین این فیلد رو قفل کرده) یا (سایت قفله)
+      const fieldLockedBySubmit = specialsSubmitted && (val !== '');
+      const fieldLockedByAdmin = !!(myPred._specialsLockedKeys && myPred._specialsLockedKeys[sp.key]);
+      const fieldLocked = fieldLockedBySubmit || fieldLockedByAdmin || globalLocked;
+      if(fieldLocked && val){
+        div.innerHTML=`<div class="unlocked-label">${sp.icon} ${sp.label} <span class="pts-badge">+${sp.pts}</span></div><div style="padding:0.4rem 0;font-size:0.9rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:0.4rem">🔒 ${val}</div>`;
+        wrap.appendChild(div);
+        continue;
+      }
       div.innerHTML=`<div class="unlocked-label">${sp.icon} ${sp.label} <span class="pts-badge">+${sp.pts}</span></div>`;
       if(sp.type==='team'){
         // Team dropdown
         const sel=document.createElement('select');
         sel.className='team-select';sel.id='sp-'+sp.key;
-        if(specialsSubmitted||globalLocked)sel.disabled=true;
+        if(fieldLocked)sel.disabled=true;
         sel.innerHTML='<option value="">انتخاب کنید</option>'+ALL_TEAMS.map(t=>`<option value="${t}"${t===val?' selected':''}>${t}</option>`).join('');
         sel.addEventListener('change',()=>onSpecial(sp.key));
         div.appendChild(sel);
@@ -2132,7 +2143,7 @@ function renderSpecials(){
         const inpEl=document.createElement('input');
         inpEl.className='autocomplete-input';inpEl.id='sp-'+sp.key;
         inpEl.value=val;inpEl.placeholder='نام بازیکن را تایپ کنید...';
-        inpEl.autocomplete='off';if(specialsSubmitted||globalLocked)inpEl.disabled=true;
+        inpEl.autocomplete='off';if(fieldLocked)inpEl.disabled=true;
         acDiv.appendChild(inpEl);
         div.appendChild(acDiv);
         // Create dropdown at body level to avoid overflow clipping
@@ -2178,7 +2189,7 @@ function renderSpecials(){
         const inpEl=document.createElement('input');
         inpEl.className='autocomplete-input';inpEl.id='sp-'+sp.key;
         inpEl.value=val;inpEl.placeholder='نام داور را انتخاب کنید...';
-        inpEl.autocomplete='off';if(specialsSubmitted||globalLocked)inpEl.disabled=true;
+        inpEl.autocomplete='off';if(fieldLocked)inpEl.disabled=true;
         acDiv.appendChild(inpEl);
         div.appendChild(acDiv);
         const ddEl=document.createElement('div');
@@ -2219,7 +2230,7 @@ function renderSpecials(){
         const inp=document.createElement('input');
         inp.className='field-input';inp.id='sp-'+sp.key;inp.value=val;
         inp.placeholder='وارد کنید...';inp.style.direction='ltr';
-        if(specialsSubmitted||globalLocked)inp.disabled=true;
+        if(fieldLocked)inp.disabled=true;
         inp.addEventListener('input',()=>onSpecial(sp.key));
         div.appendChild(inp);
       }
@@ -3075,13 +3086,28 @@ async function submitSpecialsOnly(){
   if(btn){btn.disabled=true;btn.textContent='در حال ثبت...';}
   try{
     const score=calcScore(myPred);
-    specialsSubmitted=true;
-    myPred._groupsSubmitted=groupsSubmitted;myPred._specialsSubmitted=specialsSubmitted;
+    // فقط فیلدهایی که مقدار دارن قفل می‌شن
+    const lockedKeys={};
+    for(const sp of SPECIALS){
+      if(myPred.specials&&myPred.specials[sp.key]&&myPred.specials[sp.key]!==''){
+        lockedKeys[sp.key]=true;
+      }
+    }
+    myPred._specialsLockedKeys=lockedKeys;
+    // اگه همه فیلدها پر شدن specialsSubmitted=true، وگرنه false بمونه
+    const allFilled=SPECIALS.filter(s=>!!settings.unlocked[s.key]).every(s=>lockedKeys[s.key]);
+    specialsSubmitted=allFilled;
+    myPred._groupsSubmitted=groupsSubmitted;
+    myPred._specialsSubmitted=specialsSubmitted;
     delete myPred._adminUnlockedSpecials;
     await sb.upsert('predictions',{username:currentUser,pred:myPred,submitted:scoresSubmitted,score,ts:Date.now()});
     renderSpecials();
     updateSpecialsSubmitWrap();
-    showToast('✅ پیش‌بینی‌های ویژه ثبت و قفل شد','ok');
+    if(allFilled){
+      showToast('✅ همه پیش‌بینی‌های ویژه ثبت و قفل شدند','ok');
+    }else{
+      showToast('✅ پیش‌بینی‌های پر شده قفل شدند — فیلدهای خالی همچنان قابل تکمیل هستند','ok');
+    }
   }catch(e){
     specialsSubmitted=false;
     showToast('خطا در ثبت: '+e.message,'err');
@@ -3092,7 +3118,14 @@ async function submitSpecialsOnly(){
 function updateSpecialsSubmitWrap(){
   const wrap=document.getElementById('specials-submit-wrap');
   if(!wrap)return;
-  if(specialsSubmitted){
+  // بررسی می‌کنیم آیا فیلد باز و خالی وجود داره
+  const hasOpenEmpty=SPECIALS.some(s=>{
+    if(!settings.unlocked[s.key])return false;
+    const locked=!!(myPred._specialsLockedKeys&&myPred._specialsLockedKeys[s.key]);
+    const val=myPred.specials&&myPred.specials[s.key];
+    return !locked&&(!val||val==='');
+  });
+  if(specialsSubmitted&&!hasOpenEmpty){
     wrap.innerHTML=`<div class="submitted-bar">✅ پیش‌بینی‌های ویژه ثبت و قفل شدند 🔒</div>`;
   }else{
     wrap.innerHTML=`<button onclick="submitSpecialsOnly()" id="submit-specials-btn" style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0e1a;border:none;border-radius:var(--radius-sm);padding:0.85rem;font-family:'Vazirmatn',sans-serif;font-size:0.95rem;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.4rem">ثبت ویژه</button>`;
@@ -3162,11 +3195,20 @@ async function unlockSpecialsForUser(){
     const rows=await sb.get('predictions',`username=eq.${encodeURIComponent(username)}`);
     if(!rows.length){showToast('کاربر یافت نشد','err');return;}
     const pred=rows[0].pred||{scores:{},groups:{},specials:{}};
-    pred.specials={};
+    // فقط قفل رو برمیداریم — مقادیر قبلی حفظ می‌شن
     pred._specialsSubmitted=false;
+    // _specialsLockedKeys = کلیدهایی که کاربر قبلاً پر کرده و باید قفل بمونن
+    const lockedKeys={};
+    const sp=pred.specials||{};
+    for(const key of ['champion','topscorer','topassist','referee','bestplayer','bestgk']){
+      if(sp[key]&&sp[key]!==''){
+        lockedKeys[key]=true; // این‌ها قفل می‌مونن
+      }
+    }
+    pred._specialsLockedKeys=lockedKeys;
     pred._adminUnlockedSpecials=Date.now();
     await adminPatch(username,{pred,ts:Date.now()});
-    showToast(`ویژه‌های ${username} آنلاک شد ✓`,'ok');
+    showToast(`ویژه‌های ${username} آنلاک شد — فیلدهای پر شده قفل، خالی‌ها باز ✓`,'ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
 
@@ -3196,6 +3238,10 @@ async function clearKOTeams(){
   }
   try{
     await saveKOData();
+    // پاک کردن ko از real_data (legacy) هم
+    try{
+      await sb.upsert('real_data',{id:1,scores:realData.scores||{},specials:realData.specials||{},groups:realData.groups||{},ko_setup:{r32:[],visible:false,locked:false},ko_real:{r32:[],r16:[],qf:[],sf:[],tp:[],final:[]}});
+    }catch(e2){}
     renderAdminKO();
     renderAdminKOResults();
     const visEl=document.getElementById('tgl-ko-visible');
@@ -3203,6 +3249,60 @@ async function clearKOTeams(){
     await recalcAllUserScores();
     renderFotmobBracket(globalLocked);
     showToast('نمودار حذفی کاملاً پاک شد ✓','ok');
+  }catch(e){showToast('خطا: '+e.message,'err');}
+}
+
+
+// ===== NUCLEAR RESET KO (پاک کردن همه چیز شامل پیش‌بینی‌های کاربران) =====
+async function nuclearResetKO(){
+  if(!confirm('⚠️ هشدار! این عملیات نمودار حذفی + تمام پیش‌بینی‌های مرحله حذفی همه کاربران را پاک می‌کند. آیا مطمئنید؟'))return;
+  if(!confirm('آخرین تأیید: تمام پیش‌بینی‌های knockout کاربران غیرقابل بازگشت پاک می‌شود. ادامه می‌دهید؟'))return;
+  
+  // پاک کردن koSetup و koReal در حافظه
+  koSetup.r32 = Array.from({length:16}, ()=>({h:'', a:''}));
+  koSetup.visible = false;
+  koSetup.locked = false;
+  for(const stage of KO_STAGES){
+    koReal[stage] = Array.from({length:KO_STAGE_COUNT[stage]}, ()=>({h:'',a:'',winner:''}));
+  }
+  
+  try{
+    // ذخیره koSetup و koReal خالی
+    await saveKOData();
+    // پاک کردن legacy real_data
+    try{
+      await sb.upsert('real_data',{id:1,scores:realData.scores||{},specials:realData.specials||{},groups:realData.groups||{},ko_setup:{r32:[],visible:false,locked:false},ko_real:{r32:[],r16:[],qf:[],sf:[],tp:[],final:[]}});
+    }catch(e2){}
+    
+    // پاک کردن پیش‌بینی‌های knockout از تمام کاربران
+    const rows = await sb.get('predictions','select=username,pred,submitted,score');
+    let cleared = 0;
+    for(const row of rows){
+      if(!row.username || row.username.startsWith('__')) continue;
+      const pred = row.pred || {};
+      // پاک کردن knockout و _koSubmitted
+      delete pred.knockout;
+      delete pred._koSubmitted;
+      await fetch(`${SUPABASE_URL}/rest/v1/predictions?username=eq.${encodeURIComponent(row.username)}`,{
+        method:'PATCH',
+        headers:{...sb.h,'Prefer':'return=minimal'},
+        body:JSON.stringify({pred, score:calcScore(pred), ts:Date.now()})
+      });
+      cleared++;
+    }
+    
+    // پاک کردن myPred.knockout در حافظه کاربر جاری
+    if(myPred){
+      delete myPred.knockout;
+      delete myPred._koSubmitted;
+    }
+    
+    renderAdminKO();
+    renderAdminKOResults();
+    const visEl=document.getElementById('tgl-ko-visible');
+    if(visEl)visEl.checked=false;
+    renderFotmobBracket(globalLocked);
+    showToast(`✅ ریست کامل انجام شد — ${cleared} کاربر پاک شد`,'ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
 
@@ -3277,23 +3377,27 @@ const KO_STAGE_COUNT = {r32:16, r16:8, qf:4, sf:2, tp:1, final:1};
 const KO_STAGE_NAMES = {r32:'یک‌شانزدهم', r16:'یک‌هشتم', qf:'یک‌چهارم', sf:'نیمه‌نهایی', tp:'رده‌بندی', final:'فینال'};
 
 async function loadKOData(){
+  // اول از __ko_data__ بارگذاری می‌کنیم (منبع اصلی)
+  let loadedFromKoData = false;
   try{
-    // First try real_data (legacy)
-    const rows = await sb.get('real_data','id=eq.1');
-    if(rows.length){
-      if(rows[0].ko_setup) koSetup = rows[0].ko_setup;
-      if(rows[0].ko_real) koReal = rows[0].ko_real;
-    }
-  }catch(e){}
-  try{
-    // Load from __ko_data__ predictions row (primary storage)
     const koRows = await sb.get('predictions','username=eq.__ko_data__');
     if(koRows.length && koRows[0].pred){
       const kd = koRows[0].pred;
       if(kd.ko_setup) koSetup = kd.ko_setup;
       if(kd.ko_real) koReal = kd.ko_real;
+      loadedFromKoData = true;
     }
   }catch(e){}
+  // اگر از __ko_data__ بارگذاری نشد، از real_data (legacy) استفاده می‌کنیم
+  if(!loadedFromKoData){
+    try{
+      const rows = await sb.get('real_data','id=eq.1');
+      if(rows.length){
+        if(rows[0].ko_setup) koSetup = rows[0].ko_setup;
+        if(rows[0].ko_real) koReal = rows[0].ko_real;
+      }
+    }catch(e){}
+  }
   // اطمینان از اینکه همه مراحل به صورت آرایه با طول کافی وجود دارند
   for(const stage of KO_STAGES){
     if(!Array.isArray(koReal[stage])) koReal[stage] = [];
@@ -4118,11 +4222,28 @@ async function saveAdminKO(){
     const a = document.getElementById(`ako-a-${i}`)?.value || '';
     r32.push({h, a});
   }
+  // بررسی اینکه آیا تیم‌ها تغییر کرده‌اند
+  const teamsChanged = JSON.stringify(koSetup.r32) !== JSON.stringify(r32);
   koSetup.r32 = r32;
+  // همیشه تمام koReal پاک می‌شود تا تیم/نتیجه قدیمی در هیچ مرحله‌ای باقی نماند
+  for(const stage of KO_STAGES){
+    koReal[stage] = Array.from({length:KO_STAGE_COUNT[stage]}, ()=>({h:'',a:'',winner:''}));
+  }
+  // همچنین myPred.knockout کاربر جاری ریست می‌شود
+  if(myPred){
+    delete myPred.knockout;
+    delete myPred._koSubmitted;
+  }
   try{
     await saveKOData();
+    // پاک کردن legacy real_data ko هم
+    try{
+      await sb.upsert('real_data',{id:1,scores:realData.scores||{},specials:realData.specials||{},groups:realData.groups||{},ko_setup:{r32:koSetup.r32,visible:koSetup.visible,locked:koSetup.locked},ko_real:{r32:[],r16:[],qf:[],sf:[],tp:[],final:[]}});
+    }catch(e2){}
     showToast('تیم‌های حذفی ذخیره شد ✓','ok');
+    renderAdminKO();
     renderAdminKOResults();
+    renderFotmobBracket(globalLocked);
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
 
@@ -4264,15 +4385,15 @@ async function checkAdminUnlock(section){
     if(!rows.length)return;
     const pred=rows[0].pred||{};
     if(section==='specials'&&pred._adminUnlockedSpecials){
-      if(specialsSubmitted){
-        specialsSubmitted=false;
-        myPred._specialsSubmitted=false;
-        myPred.specials=pred.specials||{};
-        myPred._adminUnlockedSpecials=pred._adminUnlockedSpecials;
-        renderSpecials();
-        updateSpecialsSubmitWrap&&updateSpecialsSubmitWrap();
-        showToast('🔓 بخش ویژه برای شما باز شد — می‌توانید ویرایش کنید','ok');
-      }
+      // آنلاک: قفل کلی رو برمیداریم، مقادیر قبلی حفظ می‌شن
+      specialsSubmitted=false;
+      myPred._specialsSubmitted=false;
+      myPred.specials=pred.specials||{};
+      myPred._specialsLockedKeys=pred._specialsLockedKeys||{};
+      myPred._adminUnlockedSpecials=pred._adminUnlockedSpecials;
+      renderSpecials();
+      updateSpecialsSubmitWrap&&updateSpecialsSubmitWrap();
+      showToast('🔓 بخش ویژه باز شد — فیلدهای خالی قابل تکمیل هستند','ok');
     }
     if(section==='groups'&&pred._adminUnlockedGroups){
       if(groupsSubmitted){
