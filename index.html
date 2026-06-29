@@ -4,11 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="جام جهانی ۲۰۲۶">
+<meta name="application-name" content="جام جهانی ۲۰۲۶">
 <meta name="theme-color" content="#0a0e1a">
 <meta name="color-scheme" content="dark">
+<meta name="description" content="پیش‌بینی جام جهانی ۲۰۲۶ — آمریکا، کانادا، مکزیک">
 <title>پیش‌بینی جام جهانی 2026</title>
+<!-- PWA Manifest inline -->
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D8%AC%D8%A7%D9%85%20%D8%AC%D9%87%D8%A7%D9%86%DB%8C%20%DB%B2%DB%B0%DB%B2%DB%B6%22%2C%22short_name%22%3A%22WC2026%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0e1a%22%2C%22theme_color%22%3A%22%230a0e1a%22%2C%22orientation%22%3A%22portrait%22%2C%22lang%22%3A%22fa%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAMAAAADAAQMAAAD5eC9oAAAAA1BMVEUKDhj%2FbcCbAAAAHklEQVR4nO3BAQ0AAADCoPdP7WsIoAAAAAAAAAAAeQIBuAABwFwrqQAAAABJRU5ErkJggg%3D%3D%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+<!-- Apple Touch Icon (SVG→PNG data URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%230a0e1a'/%3E%3Ccircle cx='96' cy='96' r='72' fill='none' stroke='%23e8c84a' stroke-width='6'/%3E%3Ctext x='96' y='120' text-anchor='middle' font-size='80' font-family='Arial'>🏆%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e1a'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='36'>🏆%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -1154,6 +1162,67 @@ body.light .header{background:rgba(3,6,15,0.8);}
       <div class="pg-row"><span>بهترین بازیکن 🔒</span><span class="pts pts-gd">+۵</span></div>
       <div class="pg-row"><span>بهترین دروازه‌بان 🔒</span><span class="pts pts-gd">+۵</span></div>
       <div class="pg-row" style="background:rgba(124,58,237,0.06);border-radius:6px;margin-top:4px;padding:0.25rem 0"><span>🏆 بونوس مرحله حذفی</span><span class="pts" style="color:#a78bfa">+۱ تا +۵</span></div>
+    </div>
+
+    <!-- iOS / Android Install Guide -->
+    <div style="margin-top:0.75rem;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+      <div style="background:linear-gradient(135deg,rgba(26,86,219,0.18),rgba(124,58,237,0.12));padding:0.75rem 1rem;display:flex;align-items:center;gap:0.6rem;border-bottom:1px solid rgba(255,255,255,0.07)">
+        <span style="font-size:1.2rem">📲</span>
+        <div>
+          <div style="font-size:0.8rem;font-weight:800;color:var(--text)">نصب اپ روی گوشی</div>
+          <div style="font-size:0.65rem;color:var(--text2);margin-top:1px">بدون نیاز به App Store یا Google Play</div>
+        </div>
+      </div>
+      <!-- iOS -->
+      <div style="padding:0.75rem 1rem;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.55rem">
+          <span style="font-size:1rem">🍎</span>
+          <span style="font-size:0.75rem;font-weight:800;color:var(--text)">آیفون / آیپد (iOS)</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem">
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#60a5fa;flex-shrink:0;margin-top:1px">۱</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">این صفحه را در مرورگر <b style="color:var(--text)">Safari</b> باز کنید</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#60a5fa;flex-shrink:0;margin-top:1px">۲</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">روی آیکون <b style="color:var(--text)">اشتراک‌گذاری</b> <span style="font-size:0.8rem">⎙</span> پایین صفحه بزنید</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#60a5fa;flex-shrink:0;margin-top:1px">۳</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">گزینه <b style="color:var(--text)">«Add to Home Screen»</b> را انتخاب کنید</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#4ade80;flex-shrink:0;margin-top:1px">✓</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">روی <b style="color:var(--text)">Add</b> بزنید — اپ روی صفحه اصلی نصب می‌شود</span>
+          </div>
+        </div>
+      </div>
+      <!-- Android -->
+      <div style="padding:0.75rem 1rem">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.55rem">
+          <span style="font-size:1rem">🤖</span>
+          <span style="font-size:0.75rem;font-weight:800;color:var(--text)">اندروید</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem">
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#4ade80;flex-shrink:0;margin-top:1px">۱</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">این صفحه را در <b style="color:var(--text)">Chrome</b> باز کنید</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#4ade80;flex-shrink:0;margin-top:1px">۲</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">روی منوی <b style="color:var(--text)">سه‌نقطه ⋮</b> بالا-راست بزنید</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#4ade80;flex-shrink:0;margin-top:1px">۳</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">گزینه <b style="color:var(--text)">«Add to Home screen»</b> یا <b style="color:var(--text)">«Install app»</b> را بزنید</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.55rem">
+            <span style="min-width:20px;height:20px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#4ade80;flex-shrink:0;margin-top:1px">✓</span>
+            <span style="font-size:0.75rem;color:var(--text2);line-height:1.5">تأیید کنید — اپ نصب می‌شود</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
  
@@ -2597,7 +2666,11 @@ async function showUserDetail(username){
         }
       }
       // Final center
-      const fchamp=(koReal.final?.[0]?.winner)||(kpred.final?.[0]?.winner)||'';
+      // قهرمان = برنده واقعی فینال یا پیش‌بینی کاربر از فینال — نه tp
+      const finalTeamsModal = {h: kpred.sf?.[0]?.winner||'', a: kpred.sf?.[1]?.winner||''};
+      const kpredFinalWinner = kpred.final?.[0]?.winner || '';
+      const validFinalWinner = (kpredFinalWinner && (kpredFinalWinner === finalTeamsModal.h || kpredFinalWinner === finalTeamsModal.a)) ? kpredFinalWinner : '';
+      const fchamp=(koReal.final?.[0]?.winner) || validFinalWinner || '';
       html+=`<div style="width:${SEP_W}px;flex-shrink:0;align-self:stretch;position:relative;margin-top:24px;"><div style="position:absolute;right:0;top:50%;width:${SEP_W}px;height:0;border-top:1px solid var(--border2);"></div></div>`;
       html+=`<div style="display:flex;flex-direction:column;width:${COL_W+14}px;flex-shrink:0;align-items:center;">`;
       html+=`<div class="fm-round-header" style="width:100%;text-align:center">🏆 فینال</div>`;
@@ -2668,12 +2741,12 @@ async function showUserDetail(username){
           } else pts=correct?bonus:-1;
           total+=pts;
           const col=pts>0?'var(--green)':pts<0?'var(--red)':'var(--text3)';
-          const sc=hasSc?`${ph}:${pa}`:'—';
-          rows+=`<div style="display:flex;align-items:center;gap:6px;padding:0.25rem 0;border-bottom:1px solid var(--border);font-size:0.7rem">
-            <span style="color:var(--text3);font-size:0.58rem;min-width:50px">${stageLabels[stage]}</span>
-            <span style="flex:1;text-align:center">${fl(t.h)} <b style="color:${correct?'var(--green)':'var(--accent)'}">${p.winner}</b> ${fl(t.a)}</span>
-            <span style="color:var(--text3);font-size:0.62rem">${sc}</span>
-            <span style="font-weight:800;color:${col};min-width:24px;text-align:right">${pts>0?'+':''}${pts}</span>
+          const sc=hasSc?`<span style="font-size:0.85rem;font-weight:900;color:var(--text);background:var(--surface3);border:1px solid var(--border2);border-radius:5px;padding:1px 7px">${ph} : ${pa}</span>`:'<span style="color:var(--text3)">—</span>';
+          rows+=`<div style="display:flex;align-items:center;gap:6px;padding:0.4rem 0;border-bottom:1px solid var(--border)">
+            <span style="color:var(--text3);font-size:0.6rem;min-width:52px;flex-shrink:0">${stageLabels[stage]}</span>
+            <span style="flex:1;font-size:0.72rem;text-align:center">${fl(t.h)} <b style="color:${correct?'var(--green)':'var(--accent)'}">${p.winner}</b> ${fl(t.a)}</span>
+            <span>${sc}</span>
+            <span style="font-size:0.82rem;font-weight:800;color:${col};min-width:28px;text-align:right">${pts>0?'+':''}${pts}</span>
           </div>`;
         }
       }
@@ -2691,7 +2764,7 @@ async function showUserDetail(username){
         if(ph===rh&&pa===ra)badge='<span class="badge-exact">+۳</span>';
         else{const pr=ph>pa?1:ph<pa?-1:0;const rr=rh>ra?1:rh<ra?-1:0;badge=pr===rr?'<span class="badge-win">+۱</span>':'<span class="badge-wrong">-۱</span>';}
       }
-      const sd=p?`<div class="pred-score"><div class="pred-score-box">${p.h}</div><span style="font-size:0.6rem;color:var(--text3)">:</span><div class="pred-score-box">${p.a}</div></div>`:`<span style="color:var(--text3)">—</span>`;
+      const sd=p?`<div class="pred-score"><div class="pred-score-box" style="width:30px;height:30px;font-size:1rem;font-weight:900">${p.h}</div><span style="font-size:0.75rem;color:var(--text2);font-weight:700">:</span><div class="pred-score-box" style="width:30px;height:30px;font-size:1rem;font-weight:900">${p.a}</div></div>`:`<span style="color:var(--text3)">—</span>`;
       html+=`<div class="pred-match-row"><span style="text-align:right">${fl(m.home)} ${m.home}</span><div style="display:flex;flex-direction:column;align-items:center;gap:2px">${sd}${badge}</div><span style="text-align:left">${m.away} ${fl(m.away)}</span></div>`;
     }
     html+='<div class="sec-label">جدول گروه‌ها</div>';
@@ -2719,8 +2792,11 @@ async function showUserDetail(username){
         <button onclick="modalKOTab('score','${username}')" id="ko-tab-score" style="flex:1;padding:0.45rem;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer">🏆 امتیاز</button>
       </div>`;
       // Bracket pane
-      html+=`<div id="ko-pane-bracket" style="overflow-x:auto;-webkit-overflow-scrolling:touch">`;
-      html+=buildModalBracket(pred.knockout);
+      html+=`<div id="ko-pane-bracket" style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;padding-bottom:8px">`;
+      const bracketHTML = buildModalBracket(pred.knockout);
+      // محاسبه عرض کامل نمودار: 9 ستون × 82px + 10 جداکننده × 6px + 96px برای فینال
+      const bracketMinW = (82*9) + (6*10) + 96;
+      html+=`<div style="min-width:${bracketMinW}px">${bracketHTML}</div>`;
       html+=`</div>`;
       // Results pane
       html+=`<div id="ko-pane-results" style="display:none">`;
@@ -2755,18 +2831,18 @@ async function showUserDetail(username){
             } else pts=correct?bonus:-1;
             ptsColor=pts>0?'var(--green)':pts<0?'var(--red)':'var(--text3)';
           }
-          const badge=pts!==null?`<span style="font-size:0.6rem;font-weight:800;color:${ptsColor};background:${pts>0?'rgba(34,197,94,0.1)':pts<0?'rgba(239,68,68,0.1)':'rgba(255,255,255,0.05)'};border-radius:5px;padding:1px 5px">${pts>0?'+':''}${pts}</span>`:'';
-          const scoreStr=(ph!==''&&pa!=='')?`<span style="font-size:0.62rem;color:var(--text3)">${ph}:${pa}</span>`:'';
+          const badge=pts!==null?`<span style="font-size:0.72rem;font-weight:800;color:${ptsColor};background:${pts>0?'rgba(34,197,94,0.12)':pts<0?'rgba(239,68,68,0.12)':'rgba(255,255,255,0.06)'};border-radius:6px;padding:2px 7px;border:1px solid ${pts>0?'rgba(34,197,94,0.25)':pts<0?'rgba(239,68,68,0.25)':'rgba(255,255,255,0.08)'}">${pts>0?'+':''}${pts}</span>`:'';
+          const scoreStr=(ph!==''&&pa!=='')?`<span style="font-size:0.9rem;font-weight:900;color:var(--text);background:var(--surface3);border:1px solid var(--border2);border-radius:6px;padding:2px 8px;letter-spacing:0.05em">${ph} : ${pa}</span>`:'';
           const winnerColor=correct?'var(--green)':wrong?'var(--red)':'var(--accent)';
           const winnerIcon=correct?' ✓':wrong?' ✗':'';
-          html+=`<div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:0.4rem;padding:0.4rem 0;border-bottom:1px solid var(--border);direction:ltr">
-            <span style="text-align:left;font-size:0.75rem">${fl(t.h)} ${t.h||'TBD'}</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:70px">
+          html+=`<div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:0.4rem;padding:0.5rem 0;border-bottom:1px solid var(--border);direction:ltr">
+            <span style="text-align:left;font-size:0.78rem;font-weight:600">${fl(t.h)} ${t.h||'TBD'}</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:80px">
               ${scoreStr}
-              <span style="font-size:0.6rem;font-weight:800;color:${winnerColor}">${p.winner}${winnerIcon}</span>
+              <span style="font-size:0.72rem;font-weight:800;color:${winnerColor}">${p.winner}${winnerIcon}</span>
               ${badge}
             </div>
-            <span style="text-align:right;font-size:0.75rem">${t.a||'TBD'} ${fl(t.a)}</span>
+            <span style="text-align:right;font-size:0.78rem;font-weight:600">${t.a||'TBD'} ${fl(t.a)}</span>
           </div>`;
         }
       }
@@ -3366,19 +3442,29 @@ async function unlockKOMatchForUser(){
   if(!username){showToast('کاربری انتخاب نشده','err');return;}
   if(!matchVal){showToast('بازی‌ای انتخاب نشده','err');return;}
   
-  const [stage, idxStr] = matchVal.split('_');
-  const idx = parseInt(idxStr);
+  // matchVal format: "r32_0", "r16_1", etc.
+  const parts = matchVal.split('_');
+  const stage = parts[0];
+  const idx = parseInt(parts[1]);
   
   try{
     const rows=await sb.get('predictions',`username=eq.${encodeURIComponent(username)}`);
     if(!rows.length){showToast('کاربر یافت نشد','err');return;}
     const pred=rows[0].pred||{};
-    // Remove the submitted lock for this specific slot
-    if(pred._koSubmitted && pred._koSubmitted[stage]){
-      delete pred._koSubmitted[stage][idx];
-    }
+    
+    // فقط قفل این بازی خاص برداشته می‌شه - پیش‌بینی قبلی حفظ می‌شه
+    if(!pred._koSubmitted) pred._koSubmitted = {};
+    if(!pred._koSubmitted[stage]) pred._koSubmitted[stage] = {};
+    // حذف قفل برای این slot خاص
+    delete pred._koSubmitted[stage][idx];
+    
+    // ذخیره timestamp آنلاک تا کاربر بفهمه باید refresh کنه
+    if(!pred._koUnlocked) pred._koUnlocked = {};
+    if(!pred._koUnlocked[stage]) pred._koUnlocked[stage] = {};
+    pred._koUnlocked[stage][idx] = Date.now();
+    
     await adminPatch(username,{pred,ts:Date.now()});
-    const matchNum = {r32:1,r16:17,qf:25,sf:29,tp:31,final:32}[stage] + idx;
+    const matchNum = ({r32:1,r16:17,qf:25,sf:29,tp:31,final:32}[stage]||1) + idx;
     showToast(`بازی ${matchNum} حذفی برای ${username} آنلاک شد ✓`,'ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
@@ -3447,6 +3533,15 @@ async function loadMyKO(){
     const rows = await sb.get('predictions',`username=eq.${encodeURIComponent(currentUser)}`);
     if(rows.length){
       myPred.knockout = rows[0].pred?.knockout || initEmptyKO();
+      // اصلاح: اگه winner فینال با تیم‌های فینالیست تطابق نداشت، پاک کن
+      const ko = myPred.knockout;
+      if(ko.final && ko.final[0] && ko.final[0].winner){
+        const sfH = ko.sf?.[0]?.winner || '';
+        const sfA = ko.sf?.[1]?.winner || '';
+        if(sfH && sfA && ko.final[0].winner !== sfH && ko.final[0].winner !== sfA){
+          ko.final[0].winner = '';
+        }
+      }
     }
   }catch(e){}
 }
@@ -3860,7 +3955,10 @@ function renderFotmobBracket(isLocked){
   const finalTeams = getFMTeams('final', 0);
   const finalPred = myPred.knockout?.final?.[0] || {h:'',a:'',winner:''};
   const finalReal = koReal.final?.[0];
-  const champion = (finalReal?.winner) || (finalPred?.winner) || '';
+  // قهرمان = برنده واقعی فینال، یا پیش‌بینی برنده فینال (نه tp)
+  // اطمینان که winner فینال از تیم‌های فینال هست نه تیم دیگه
+  const finalPredWinner = (finalPred.winner && (finalPred.winner === finalTeams.h || finalPred.winner === finalTeams.a)) ? finalPred.winner : '';
+  const champion = (finalReal?.winner) || finalPredWinner || '';
   
   // Left SF → Final connector
   html += `<div style="width:${SEP_W}px;flex-shrink:0;align-self:stretch;position:relative;margin-top:${24}px;">
@@ -4108,6 +4206,11 @@ function selectKOWinner(stage, idx, side){
   if(!winner) return;
   const current = myPred.knockout[stage][idx];
   
+  // اگه winner قبلی با تیم‌های فعلی این match تطابق نداره، ریست کن
+  if(current.winner && current.winner !== teams.h && current.winner !== teams.a){
+    myPred.knockout[stage][idx].winner = '';
+  }
+  
   // Toggle selection
   if(current.winner === winner){
     myPred.knockout[stage][idx].winner = '';
@@ -4248,20 +4351,22 @@ async function saveAdminKO(){
   // بررسی اینکه آیا تیم‌ها تغییر کرده‌اند
   const teamsChanged = JSON.stringify(koSetup.r32) !== JSON.stringify(r32);
   koSetup.r32 = r32;
-  // همیشه تمام koReal پاک می‌شود تا تیم/نتیجه قدیمی در هیچ مرحله‌ای باقی نماند
-  for(const stage of KO_STAGES){
-    koReal[stage] = Array.from({length:KO_STAGE_COUNT[stage]}, ()=>({h:'',a:'',winner:''}));
-  }
-  // همچنین myPred.knockout کاربر جاری ریست می‌شود
-  if(myPred){
-    delete myPred.knockout;
-    delete myPred._koSubmitted;
+  // فقط اگر تیم‌ها واقعاً تغییر کرده باشند، koReal پاک می‌شود
+  if(teamsChanged){
+    for(const stage of KO_STAGES){
+      koReal[stage] = Array.from({length:KO_STAGE_COUNT[stage]}, ()=>({h:'',a:'',winner:''}));
+    }
+    // myPred.knockout کاربر جاری هم ریست می‌شود
+    if(myPred){
+      delete myPred.knockout;
+      delete myPred._koSubmitted;
+    }
   }
   try{
     await saveKOData();
-    // پاک کردن legacy real_data ko هم
+    // ذخیره در legacy real_data هم (بدون پاک کردن koReal اگر تیم‌ها تغییر نکردند)
     try{
-      await sb.upsert('real_data',{id:1,scores:realData.scores||{},specials:realData.specials||{},groups:realData.groups||{},ko_setup:{r32:koSetup.r32,visible:koSetup.visible,locked:koSetup.locked},ko_real:{r32:[],r16:[],qf:[],sf:[],tp:[],final:[]}});
+      await sb.upsert('real_data',{id:1,scores:realData.scores||{},specials:realData.specials||{},groups:realData.groups||{},ko_setup:{r32:koSetup.r32,visible:koSetup.visible,locked:koSetup.locked},ko_real:koReal});
     }catch(e2){}
     showToast('تیم‌های حذفی ذخیره شد ✓','ok');
     renderAdminKO();
@@ -4368,6 +4473,8 @@ async function saveAdminKOResults(){
   try{
     await saveKOData();
     await recalcAllUserScores();
+    // re-render تا تیم‌های مراحل بعدی آپدیت بشن
+    renderAdminKOResults();
     showToast('نتایج حذفی ذخیره و امتیازها آپدیت شد ✓','ok');
   }catch(e){showToast('خطا: '+e.message,'err');}
 }
@@ -4380,7 +4487,7 @@ function goTab(name,btn){
   btn.classList.add('active');
   btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   if(name==='lb')loadLB();
-  if(name==='knockout'){loadKOData().then(()=>{loadMyKO().then(()=>renderKOBracket());});}
+  if(name==='knockout'){loadKOData().then(()=>{loadMyKO().then(()=>{if(currentUser)checkAdminUnlock('knockout');renderKOBracket();});});}
   if(name==='specials'&&currentUser)checkAdminUnlock('specials');
   if(name==='groups'&&currentUser)checkAdminUnlock('groups');
   if(['m1','m2','m3','m4'].includes(name)&&currentUser)checkAdminUnlock('matches');
@@ -4434,6 +4541,35 @@ async function checkAdminUnlock(section){
         myPred._adminUnlockedMatches=(myPred._adminUnlockedMatches||[]).concat(newUnlocks);
         renderAll();
         showToast(`🔓 بازی‌های ${newUnlocks.join('، ')} برای شما باز شد — می‌توانید ویرایش کنید`,'ok');
+      }
+    }
+    // آنلاک مرحله حذفی: اگر _koSubmitted تغییر کرده باشه
+    if(section==='knockout'){
+      const freshPred = pred;
+      const freshKoSubmitted = freshPred._koSubmitted || {};
+      const freshKoUnlocked = freshPred._koUnlocked || {};
+      const myKoSubmitted = myPred._koSubmitted || {};
+      
+      // بررسی اگه بازی‌های آنلاک‌شده جدیدی هست
+      let hasNewUnlock = false;
+      for(const stage of KO_STAGES){
+        const freshStage = freshKoSubmitted[stage] || {};
+        const myStage = myKoSubmitted[stage] || {};
+        for(const idx of Object.keys(myStage)){
+          // اگه ادمین قفلش رو برداشته (توی freshKoSubmitted نیست ولی توی myKoSubmitted هست)
+          if(myStage[idx] && !freshStage[idx]){
+            hasNewUnlock = true;
+          }
+        }
+      }
+      
+      // آپدیت _koSubmitted و knockout از دیتابیس
+      myPred._koSubmitted = freshKoSubmitted;
+      myPred._koUnlocked = freshKoUnlocked;
+      if(freshPred.knockout) myPred.knockout = freshPred.knockout;
+      
+      if(hasNewUnlock){
+        showToast('🔓 بازی‌های حذفی برای شما آنلاک شد — می‌توانید ویرایش کنید','ok');
       }
     }
   }catch(e){}
