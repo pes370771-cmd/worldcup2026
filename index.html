@@ -2539,14 +2539,26 @@ function updateBottomBar(){
 }
  
 // ===== LEADERBOARD =====
+let lbCache = {}; // کش پیش‌بینی‌های لود شده
+
 async function loadLB(){
   const w=document.getElementById('lb-wrap');
   w.innerHTML='<div class="empty"><div class="empty-ico">⏳</div><div>در حال بارگذاری...</div></div>';
   try{
-    await loadGlobal();
-    const rows=await sb.get('predictions','submitted=eq.true&select=username,pred,score,ts');
+    // فقط اگه realData هنوز لود نشده، دوباره لود کن
+    if(!realData || !realData.scores) await loadGlobal();
+    const rows=await sb.get('predictions','submitted=eq.true&select=username,score,pred,ts');
     if(!rows.length){w.innerHTML='<div class="empty"><div class="empty-ico">👥</div><div>هنوز کسی پیش‌بینی نهایی ثبت نکرده</div></div>';return;}
-    const entries=rows.map(r=>({name:r.username,pred:r.pred,score:calcScore(r.pred),filled:Object.keys(r.pred?.scores||{}).length}));
+    // از score ذخیره‌شده در دیتابیس استفاده کن — اگه null بود calcScore رو اجرا کن
+    const entries=rows.map(r=>{
+      lbCache[r.username] = {pred: r.pred, score: r.score}; // کش کردن
+      return {
+        name:r.username,
+        pred:r.pred,
+        score: r.score !== null && r.score !== undefined ? r.score : calcScore(r.pred||{}),
+        filled:Object.keys(r.pred?.scores||{}).length
+      };
+    });
     entries.sort((a,b)=>b.score-a.score);
     const rc=[{bg:'rgba(251,191,36,0.15)',c:'#fbbf24',br:'rgba(251,191,36,0.3)'},{bg:'rgba(148,163,184,0.1)',c:'#94a3b8',br:'rgba(148,163,184,0.25)'},{bg:'rgba(180,83,9,0.1)',c:'#c2813a',br:'rgba(180,83,9,0.2)'}];
     const html=entries.map((e,i)=>{
@@ -2563,10 +2575,19 @@ async function loadLB(){
  
 async function showUserDetail(username){
   try{
-    const rows=await sb.get('predictions',`username=eq.${encodeURIComponent(username)}`);
-    if(!rows.length)return;
-    const pred=rows[0].pred;
-    const totalScore=calcScore(pred);
+    let pred, totalScore;
+    // اگه توی کش داریم، query نزن
+    if(lbCache[username]){
+      pred = lbCache[username].pred;
+      const cachedScore = lbCache[username].score;
+      totalScore = cachedScore !== null && cachedScore !== undefined ? cachedScore : calcScore(pred);
+    } else {
+      const rows=await sb.get('predictions',`username=eq.${encodeURIComponent(username)}`);
+      if(!rows.length)return;
+      pred=rows[0].pred;
+      totalScore=rows[0].score !== null && rows[0].score !== undefined ? rows[0].score : calcScore(pred);
+      lbCache[username] = {pred, score: totalScore};
+    }
     const koScore=calcKOScore(pred);
     const groupScore=totalScore-koScore;
 
@@ -2666,11 +2687,13 @@ async function showUserDetail(username){
         }
       }
       // Final center
-      // قهرمان = برنده واقعی فینال یا پیش‌بینی کاربر از فینال — نه tp
-      const finalTeamsModal = {h: kpred.sf?.[0]?.winner||'', a: kpred.sf?.[1]?.winner||''};
-      const kpredFinalWinner = kpred.final?.[0]?.winner || '';
-      const validFinalWinner = (kpredFinalWinner && (kpredFinalWinner === finalTeamsModal.h || kpredFinalWinner === finalTeamsModal.a)) ? kpredFinalWinner : '';
-      const fchamp=(koReal.final?.[0]?.winner) || validFinalWinner || '';
+      // تیم‌های فینال از sf همان کاربر (kpred)
+      const sfH_modal = kpred?.sf?.[0]?.winner || '';
+      const sfA_modal = kpred?.sf?.[1]?.winner || '';
+      const kpredFinalWinner = kpred?.final?.[0]?.winner || '';
+      // فقط اگه winner با یکی از فینالیست‌های همان کاربر مطابق باشه نشون بده
+      const validFinalWinner = kpredFinalWinner && (kpredFinalWinner === sfH_modal || kpredFinalWinner === sfA_modal) ? kpredFinalWinner : '';
+      const fchamp = (koReal.final?.[0]?.winner) || validFinalWinner || '';
       html+=`<div style="width:${SEP_W}px;flex-shrink:0;align-self:stretch;position:relative;margin-top:24px;"><div style="position:absolute;right:0;top:50%;width:${SEP_W}px;height:0;border-top:1px solid var(--border2);"></div></div>`;
       html+=`<div style="display:flex;flex-direction:column;width:${COL_W+14}px;flex-shrink:0;align-items:center;">`;
       html+=`<div class="fm-round-header" style="width:100%;text-align:center">🏆 فینال</div>`;
@@ -3853,10 +3876,12 @@ function makeFMMatchBox(stage, idx, isLocked){
   const hElim = hasReal && !hRealWin && teams.h;
   const aElim = hasReal && !aRealWin && teams.a;
   
-  const hScore = hasReal ? (real.h !== '' && real.h !== undefined ? real.h : '') : 
-                 (pred.h !== '' && pred.h !== undefined ? pred.h : '');
-  const aScore = hasReal ? (real.a !== '' && real.a !== undefined ? real.a : '') :
-                 (pred.a !== '' && pred.a !== undefined ? pred.a : '');
+  // score کاربر همیشه نشون داده می‌شه — نتیجه واقعی جداگانه نمایش می‌یابد
+  const hScore = pred.h !== '' && pred.h !== undefined ? pred.h : '';
+  const aScore = pred.a !== '' && pred.a !== undefined ? pred.a : '';
+  // نتیجه واقعی برای نمایش مجزا
+  const hRealScore = hasReal && real.h !== '' && real.h !== undefined ? real.h : '';
+  const aRealScore = hasReal && real.a !== '' && real.a !== undefined ? real.a : '';
   
   // Per-item submitted lock
   const slotSubmitted = !!(myPred._koSubmitted?.[stage]?.[idx]);
@@ -3876,8 +3901,10 @@ function makeFMMatchBox(stage, idx, isLocked){
     if(aSel) aClass += ' selected';
   }
   
-  const lockBadge = '';
-  
+  const realScoreBadge = hasReal && (hRealScore!=='' || aRealScore!=='') 
+    ? `<div style="text-align:center;font-size:0.5rem;color:var(--text3);margin-top:1px;letter-spacing:0.03em">نتیجه: ${hRealScore!==''?hRealScore:'?'} - ${aRealScore!==''?aRealScore:'?'}</div>`
+    : '';
+
   return `<div class="fm-match-box" style="position:relative;">
     <div class="${hClass}" ${clickH} style="${canClick&&teams.h?'cursor:pointer;touch-action:manipulation;':''}">
       <span class="fm-team-flag">${teams.h?fl(teams.h):'⬜'}</span>
@@ -3893,6 +3920,7 @@ function makeFMMatchBox(stage, idx, isLocked){
       ${aRealWin&&aCorrect?'<span style="font-size:0.48rem;color:var(--green);flex-shrink:0">✓</span>':''}
       <span class="fm-team-score">${aScore!==''?aScore:''}</span>
     </div>
+    ${realScoreBadge}
   </div>`;
 }
 
@@ -4486,8 +4514,13 @@ function goTab(name,btn){
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
   btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-  if(name==='lb')loadLB();
-  if(name==='knockout'){loadKOData().then(()=>{loadMyKO().then(()=>{if(currentUser)checkAdminUnlock('knockout');renderKOBracket();});});}
+  if(name==='lb'){lbCache={};loadLB();}
+  if(name==='knockout'){
+    Promise.all([loadKOData(), loadMyKO()]).then(()=>{
+      if(currentUser) checkAdminUnlock('knockout');
+      renderKOBracket();
+    });
+  }
   if(name==='specials'&&currentUser)checkAdminUnlock('specials');
   if(name==='groups'&&currentUser)checkAdminUnlock('groups');
   if(['m1','m2','m3','m4'].includes(name)&&currentUser)checkAdminUnlock('matches');
